@@ -1,0 +1,22 @@
+$RegPath   = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+$ValueName = "NoAutoUpdate"
+
+try {
+    if (Test-Path $RegPath) {
+        $prop = Get-ItemProperty -Path $RegPath -Name $ValueName -ErrorAction SilentlyContinue
+        if ($null -ne $prop) {
+            Remove-ItemProperty -Path $RegPath -Name $ValueName -Force -ErrorAction Stop
+            Write-Output "Removed $ValueName from $RegPath"
+            exit 0
+        } else {
+            Write-Output "$ValueName not present - nothing to remove"
+            exit 0
+        }
+    } else {
+        Write-Output "Path $RegPath does not exist - nothing to remove"
+        exit 0
+    }
+} catch {
+    Write-Error "Failed to remove $ValueName - $($_.Exception.Message)"
+    exit 1
+}
